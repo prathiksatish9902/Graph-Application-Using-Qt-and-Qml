@@ -103,13 +103,23 @@ void DataProvider::generateRandomData()
 
     for (int i = 0; i < numPoints; ++i) {
         double soc = QRandomGenerator::global()->bounded(25, 85);
-        double power = QRandomGenerator::global()->bounded(100, 300);
-        newData.append(DataPoint(soc, power));
+        newData.append(DataPoint(soc, 0));
     }
 
     std::sort(newData.begin(), newData.end(), [](const DataPoint &a, const DataPoint &b) {
         return a.getSocPercentage() < b.getSocPercentage();
     });
 
+    double minPower = 100;
+    double maxPower = 300;
+    double step = (maxPower - minPower) / (numPoints - 1);
+
+    for (int i = 0; i < numPoints; ++i) {
+        double power = minPower + i * step;
+        power += QRandomGenerator::global()->bounded(10.0) - 5.0;
+        newData[i] = DataPoint(newData[i].getSocPercentage(), power);
+    }
+
     setDataPoints(newData);
 }
+
